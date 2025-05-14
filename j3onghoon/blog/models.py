@@ -11,6 +11,7 @@ from django.utils import timezone
 
 
 BYTE_SCALE = 1024
+
 BYTE = "B"
 KILOBYTE = "KB"
 MEGABYTE = "MB"
@@ -23,12 +24,14 @@ VIDEO_EXTENSIONS = ['mp4', 'avi', 'mov', 'wmv', 'flv', 'webm', 'mkv']
 DOCUMENT_EXTENSIONS = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'csv', 'rtf']
 AUDIO_EXTENSIONS = ['mp3', 'wav', 'ogg', 'flac', 'aac', 'm4a']
 
+
 class FileType(models.TextChoices):
     IMAGE = "image", _("이미지")
     VIDEO = "video", _("동영상")
     DOCUMENT = "document", _("문서")
     AUDIO = "audio", _("오디오")
     OTHER = "other", _("기타")
+
 
 EXTENSION_TO_FILE_TYPE = {ext: FileType.IMAGE for ext in IMAGE_EXTENSIONS}
 EXTENSION_TO_FILE_TYPE.update({ext: FileType.VIDEO for ext in VIDEO_EXTENSIONS})
@@ -221,7 +224,7 @@ class AttachmentMixin(models.Model):
         return self.get_attachments_by_type(FileType.IMAGE)
 
     @property
-    def viedos(self):
+    def videos(self):
         return self.get_attachments_by_type(FileType.VIDEO)
 
     @property
@@ -231,3 +234,44 @@ class AttachmentMixin(models.Model):
     @property
     def audios(self):
         return self.get_attachments_by_type(FileType.AUDIO)
+
+
+
+class UserManager(BaseUserManager):
+    def create_user(self, email, password=None, **extra_fields):
+        if not email:
+            raise ValidationError(_("이메일 주소는 필수입니다."))
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('is_active', True)
+
+        if extra_fields.get('is_staff') is not True:
+            raise ValidationError(_('superuser는 is_staff=True 이어야 합니다.'))
+        if extra_fields.get('is_superuser') is not True:
+            raise ValidationError(_('superuser는 is_superuser=True 이어야 합니다.'))
+
+        return self.create_user(email, password, **extra_fields)
+
+
+class User(AbstractUser):
+    username = models.CharField(
+        _("사용자명"),
+        max_length=150,
+        blank=True,
+        null=True
+    )
+    email = models.EmailField(
+        _("이메일"),
+        unique=True,
+    )
+    phone = models.CharField(_("휴대폰"), max_length=20, blank=True)
+    birth_datetime = models.DateTimeField(_("생년월일시"), null=True, blank=True)
+
+
