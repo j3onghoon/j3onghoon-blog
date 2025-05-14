@@ -138,18 +138,20 @@ class Attachment(BaseModel):
     all_objects = AllObjectsManager()
 
     class Meta:
-        ordereing = ["content_type", "object_id", "order"]
+        ordering = ["content_type", "object_id", "order"]
         indexes = [
             models.Index(fields=["content_type", "object_id"]),
             models.Index(fields=["file_type"])
         ]
 
     def __str__(self):
-        if self.name:
-            return self.name
-        elif self.file and (filename := getattr(self.file, "name", "")):
-            return filename.split("/")[-1]
-        return ""
+        # 주관적인 가독성 향상보다는 객관적인 코드 수 감소가 나을 듯하여 코드 수정
+        # if self.name:
+        #     return self.name
+        # elif self.file and (filename := getattr(self.file, "name", "")):
+        #     return filename.split("/")[-1]
+        # return ""
+        return self.name or self.file and self.file.name and self.file.name.split("/")[-1] or ""
 
     @property
     def extension(self):
