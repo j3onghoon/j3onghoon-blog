@@ -5,9 +5,12 @@ from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractUser
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
-from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
+from django.utils.text import slugify
 from django.utils import timezone
+
+from utils import set_image
 
 
 BYTE_SCALE = 1024
@@ -238,7 +241,6 @@ class AttachmentMixin(models.Model):
         return self.get_attachments_by_type(FileType.AUDIO)
 
 
-
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         if not email:
@@ -262,7 +264,7 @@ class UserManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 
-class User(AbstractUser):
+class User(AbstractUser, BaseModel, AttachmentMixin):
     username = models.CharField(
         _("사용자명"),
         max_length=150,
@@ -276,4 +278,85 @@ class User(AbstractUser):
     phone = models.CharField(_("휴대폰"), max_length=20, blank=True)
     birth_datetime = models.DateTimeField(_("생년월일시"), null=True, blank=True)
 
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = []
 
+    objects = UserManager()
+
+    def __str__(self):
+        return self.email
+
+    @property
+    def profile_image(self):
+        images = self.get_attachments_by_type(file_type=FileType.IMAGE)
+        return images.filter().first()
+
+    def set_profile_image(self, file, **kwargs):
+        return set_image(self, "profile_image", file, **kwargs)
+
+
+class Category(BaseModel, AttachmentMixin):
+    name = models.CharField(max_length=200)
+    slug = models.SlugField(max_length=100, unique=True)
+    parent = models.ForeignKey("self", on_delete=models.CASCADE,
+                               null=True, blank=True, related_name="children", verbose_nane=_("상위 카테고리"))
+
+    class Meta:
+        ordering = ["name"]
+
+    def __str__(self):
+        return self.full_path
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+    @property
+    def full_path(self):
+        return f"{self.parent.full_path} > {self.name}" if self.parent else self.name
+
+    @property
+    def leaf(self):
+        return not self.children.exists()
+
+    @property
+    def image(self):
+        return self.get_attachments_by_type(FileType.IMAGE).first()
+
+    def set_image(self, file, **kwargs):
+        return set_image(self, "image", file, **kwargs)
+
+
+class Post(BaseModel):
+    title = models.CharField(max_length=200)
+    author = models.ForeignKey("User", on_delete=models.SET_NULL, related_name="posts", verbose_name="작성자")
+    content = models.TextField()
+    category = models.ForeignKey("Category", on_delete=models.SET_NULL,
+                                 related_name="posts", verbose_name="카테고리")
+    views = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["-created"]
+        indexes = [
+            models.Index(fields=["-created"]),
+        ]
+
+    def __str__(self):
+        return self.title
+
+
+class Comment(BaseModel):
+    content = models.TextField()
+    post = models.ForeignKey("Post", on_delete=models.CASCADE, related_name="comments", verbose_name=_("게시물"))
+    author = models.ForeignKey("User", on_delete=models.SET_NULL, related_name="comments", verbose_name=_("작성자"))
+    parent = models.ForeignKey("self", on_delete=models.SET_NULL, related_name="children", verbose_name=_("상위 댓글"))
+
+    class Meta:
+        ordering = ["created"]
+        indexes = [
+            models.Index(fields=["created"]),
+        ]
+
+    def __str__(self):
+        return f"{self.post}에 {self.author}가 작성한 댓글"
