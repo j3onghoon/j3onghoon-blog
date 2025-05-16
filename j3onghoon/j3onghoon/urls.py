@@ -20,9 +20,9 @@ from rest_framework.routers import DefaultRouter
 from blog import api
 
 router = DefaultRouter()
-router.register(r"user", views.UserViewSet)
-router.register(r"post", views.PostViewSet)
-router.register(r"comment", views.CommentViewSet)
+router.register(r"user", api.UserViewSet)
+router.register(r"post", api.PostViewSet)
+router.register(r"comment", api.CommentViewSet)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
