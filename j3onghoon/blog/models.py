@@ -283,6 +283,9 @@ class User(AbstractUser, BaseModel, AttachmentMixin):
 
     objects = UserManager()
 
+    class Meta:
+        ordering = ["-created"]
+
     def __str__(self):
         return self.email
 
@@ -330,8 +333,8 @@ class Category(BaseModel, AttachmentMixin):
 
 class Post(BaseModel):
     title = models.CharField(max_length=200)
-    author = models.ForeignKey("User", on_delete=models.SET_NULL, related_name="posts", verbose_name="작성자")
     content = models.TextField()
+    author = models.ForeignKey("User", on_delete=models.SET_NULL, related_name="posts", verbose_name="작성자")
     category = models.ForeignKey("Category", on_delete=models.SET_NULL,
                                  related_name="posts", verbose_name="카테고리")
     views = models.PositiveIntegerField(default=0)
