@@ -128,3 +128,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 TAILWIND_APP_NAME = 'theme'
 AUTH_USER_MODEL = "blog.User"
+
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS':(
+        'django_filters.rest_framework.DjangoFilterBackend',
+        'rest_framework.filters.SearchFilter',
+        'rest_framework.filters.OrderingFilter',
+    ),
+}
