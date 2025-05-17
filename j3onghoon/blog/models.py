@@ -10,7 +10,7 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.text import slugify
 from django.utils import timezone
 
-from utils import set_image
+from .utils import set_image
 
 
 BYTE_SCALE = 1024
@@ -133,7 +133,7 @@ class Attachment(BaseModel):
     description = models.TextField(_("설명"), blank=True)
     order = models.PositiveIntegerField(_("정렬 순서"), default=0)
 
-    content_type = models.ForeignKey("ContentType", on_delete=models.CASCADE, verbose_name=_("콘텐츠 타입"))
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, verbose_name=_("콘텐츠 타입"))
     object_id = models.PositiveIntegerField(_("객체 ID"))
     content_object = GenericForeignKey("content_type", "object_id")
 
@@ -302,7 +302,7 @@ class Category(BaseModel, AttachmentMixin):
     name = models.CharField(max_length=200)
     slug = models.SlugField(max_length=100, unique=True)
     parent = models.ForeignKey("self", on_delete=models.CASCADE,
-                               null=True, blank=True, related_name="children", verbose_nane=_("상위 카테고리"))
+                               null=True, blank=True, related_name="children", verbose_name=_("상위 카테고리"))
 
     class Meta:
         ordering = ["name"]
@@ -334,8 +334,8 @@ class Category(BaseModel, AttachmentMixin):
 class Post(BaseModel):
     title = models.CharField(max_length=200)
     content = models.TextField()
-    author = models.ForeignKey("User", on_delete=models.SET_NULL, related_name="posts", verbose_name="작성자")
-    category = models.ForeignKey("Category", on_delete=models.SET_NULL,
+    author = models.ForeignKey("User", null=True, on_delete=models.SET_NULL, related_name="posts", verbose_name="작성자")
+    category = models.ForeignKey("Category", null=True, on_delete=models.SET_NULL,
                                  related_name="posts", verbose_name="카테고리")
     views = models.PositiveIntegerField(default=0)
 
@@ -352,8 +352,8 @@ class Post(BaseModel):
 class Comment(BaseModel):
     content = models.TextField()
     post = models.ForeignKey("Post", on_delete=models.CASCADE, related_name="comments", verbose_name=_("게시물"))
-    author = models.ForeignKey("User", on_delete=models.SET_NULL, related_name="comments", verbose_name=_("작성자"))
-    parent = models.ForeignKey("self", on_delete=models.SET_NULL, related_name="children", verbose_name=_("상위 댓글"))
+    author = models.ForeignKey("User", null=True, on_delete=models.SET_NULL, related_name="comments", verbose_name=_("작성자"))
+    parent = models.ForeignKey("self", null=True, on_delete=models.SET_NULL, related_name="children", verbose_name=_("상위 댓글"))
 
     class Meta:
         ordering = ["created"]
