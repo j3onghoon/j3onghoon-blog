@@ -1,42 +1,17 @@
-{% load static tailwind_tags %}
-<!DOCTYPE html>
-<html lang="en" class="dark">
-<head>
-  <meta charset="UTF-8">
-  <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
-  <title>{% block title %}정훈이 홈페이지{% endblock %}</title>
-  {% tailwind_css %}
-</head>
-<body class="min-h-screen bg-gray-900 text-gray-100">
-  <nav class="bg-gray-800 shadow-md">
-    <div class="max-w-6xl mx-auto px-4">
-      <div class="flex justify-between items-center h-16">
-        <div class="flex">
-          <a href="{% url 'home' %}" class="flex-shrink-0 flex items-center">
-            <span class="text-xl font-bold text-purple-400">정훈이 홈페이지</span>
-          </a>
-        </div>
-        <div class="flex space-x-4">
-          <a href="{% url 'post_list' %}" class="px-3 py-2 text-gray-100 hover:text-purple-400 transition-colors {% if 'posts' in request.path %}text-purple-400{% endif %}">게시물</a>
-          <a href="{% url 'portfolio_list' %}" class="px-3 py-2 text-gray-100 hover:text-purple-400 transition-colors {% if 'portfolio' in request.path %}text-purple-400{% endif %}">포트폴리오</a>
-        </div>
-      </div>
-    </div>
-  </nav>
-  <main class="flex-grow max-x-6xl w-full mx-auto px-4 py-8">
-    {% block content %}
-      <div>
-        <a href="https://github.com/j3onghoon" class="text-gray-400 hover:text-purple-400">github</a>
-        <a href="https://www.linkedin.com/in/%EC%A0%95%ED%9B%88-%EB%B0%95-253b45306/" class="text-gray-400 hover:text-purple-400">linkedin</a>
-        <span class="text-gray-400">park.j3onghoon@gmail.com</span>
-      </div>
-      <div>
-        <h1>소개</h1>
-        <br>
-        <h1>경험</h1>
-        <br>
-      </div>
-    {% endblock %}
-  </main>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}정훈이 홈페이지{% endblock %}
+
+{% block content %}
+  <div>
+    <a href="https://github.com/j3onghoon" class="text-gray-400 hover:text-purple-400">github</a>
+    <a href="https://www.linkedin.com/in/%EC%A0%95%ED%9B%88-%EB%B0%95-253b45306/" class="text-gray-400 hover:text-purple-400">linkedin</a>
+    <span class="text-gray-400">park.j3onghoon@gmail.com</span>
+  </div>
+  <div>
+    <h1>소개</h1>
+    <br>
+    <h1>경험</h1>
+    <br>
+  </div>
+{% endblock %}
