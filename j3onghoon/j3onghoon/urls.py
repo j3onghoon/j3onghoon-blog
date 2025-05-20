@@ -23,6 +23,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("accounts/", include("django.contrib.auth.urls")),
     path("", views.HomeView.as_view(), name="home"),
-    path("posts/", views.PostListView.as_view(), name="post_list"),
-    path("portfolios/", views.PostListView.as_view(), name="portfolio_list"),
+    path("posts/", views.PostListView.as_view(), name="posts"),
+    path("guestbooks/", views.GuestBookListView.as_view(), name="guestbooks"),
+    path("portfolios/", views.PortfolioListView.as_view(), name="portfolios"),
 ]
