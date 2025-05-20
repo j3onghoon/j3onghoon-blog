@@ -13,16 +13,16 @@
     <div class="max-w-6xl mx-auto px-4">
       <div class="flex justify-between items-center h-16">
         <div class="flex items-center">
-          <a href="{% url 'home' %}" class="flex-shrink-0 flex items-center">
+          <a href="{% url 'home' %}" class="flex-shrink-0 flex">
             <span class="text-2xl font-bold bg-gradient-to-r from-purple-400 to-indigo-500 bg-clip-text text-transparent">정훈이 홈페이지</span>
           </a>
         </div>
-      <div class="md:hidden">
-        <button x-data="{open: false}" @click="open = !open" class="text-gray-300 hover:text-white focus:outline-none">
-          <span x-show="!open"><i class="fas fa-bars text-xl"></i></span>
-          <span x-show="open"><i class="fas fa-times text-xl"></i></span>
-        </button>
-      </div>
+        <div class="md:hidden">
+          <button x-data="{open: false}" @click="open = !open" class="text-gray-300 hover:text-white focus:outline-none">
+            <span x-show="!open"><i class="fas fa-bars text-xl"></i></span>
+            <span x-show="open"><i class="fas fa-times text-xl"></i></span>
+          </button>
+        </div>
         <div class="hidden md:flex md:items-center md:space-x-6 space-x-6">
           <a href="{% url 'post_list' %}" class="px-3 py-2 text-gray-100 hover:text-purple-400 transition-colors duration-300 {% if 'posts' in request.path %}text-purple-400 font-medium{% endif %}">게시물</a>
           <a href="{% url 'guestbook' %}" class="px-3 py-2 text-gray-100 hover:text-purple-400 transition-colors duration-300 {% if 'posts' in request.path %}text-purple-400 font-medium{% endif %}">방명록</a>
@@ -40,7 +40,7 @@
     </div>
   </div>
 
-  <main class="flex-grow max-x-6xl w-full mx-auto px-4 py-12">
+  <main class="flex-grow max-w-6xl w-full mx-auto px-12 py-6 text-center">
     {% block content %}
     {% endblock %}
   </main>
