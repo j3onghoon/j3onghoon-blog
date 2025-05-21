@@ -332,12 +332,18 @@ class Category(BaseModel, AttachmentMixin):
 
 
 class Post(BaseModel):
+    class PostType(models.TextChoices):
+        POST = "post", _("게시물")
+        GUESTBOOK = "guestbook", _("방명록")
+        PORTFOLIO = "portfolio", _("포트폴리오")
+
     title = models.CharField(max_length=200)
     content = models.TextField()
     author = models.ForeignKey("User", null=True, on_delete=models.SET_NULL, related_name="posts", verbose_name="작성자")
     category = models.ForeignKey("Category", null=True, on_delete=models.SET_NULL,
                                  related_name="posts", verbose_name="카테고리")
     views = models.PositiveIntegerField(default=0)
+    type = models.CharField(max_length=30, choices=PostType.choices, null=False, default=PostType.POST)
 
     class Meta:
         ordering = ["-created"]
