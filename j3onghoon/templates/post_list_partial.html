@@ -1,0 +1,11 @@
+<table>
+{% for post in posts %}
+  <tr>
+    <td>
+      <a class="block" href="{% url 'post-detail' post.pk %}">{{ post.title }} [{{ post.comments_count }}]</a>
+      <a class="block ms-2" href="#">{{ post.category }}</a>
+      {{ post.updated }}
+    </td>
+  </tr>
+{% endfor %}
+</table>
