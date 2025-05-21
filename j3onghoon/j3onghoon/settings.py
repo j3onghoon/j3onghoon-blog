@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'blog.apps.BlogConfig',
     'tailwind',
     'theme',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
