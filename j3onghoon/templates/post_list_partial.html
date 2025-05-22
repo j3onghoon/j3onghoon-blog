@@ -1,11 +1,30 @@
-<table>
-{% for post in posts %}
-  <tr>
-    <td>
-      <a class="block" href="{% url 'post-detail' post.pk %}">{{ post.title }} [{{ post.comments_count }}]</a>
-      <a class="block ms-2" href="#">{{ post.category }}</a>
-      {{ post.updated }}
-    </td>
-  </tr>
-{% endfor %}
-</table>
+<div id="posts-container">
+  <table>
+  {% for post in posts %}
+    <tr>
+      <td class="text-left">
+        <a class="inline-block text-2xl" href="{% url 'post-detail' post.pk %}">{{ post.title }} [{{ post.comments_count }}]</a>
+        <div class="mb-3">
+          <a class="inline-block text-sm" href="#">{{ post.category }}</a>
+          <span> {{ post.updated }}</span>
+        </div>
+      </td>
+    </tr>
+  {% endfor %}
+  </table>
+
+  {% for page_num in elided_page_range %}
+    {% if page_num == page_obj.number %}
+      <span class="px-3 py-2 bg-blue-700 text-white rounded">{{ page_num }}</span>
+    {% elif page_num == "..." %}
+      <span class="px-3 py-2">{{ page_num }}</span>
+    {% else %}
+      <button
+        hx-get="{% url 'posts' %}?page={{ page_num }}"
+        hx-target="#posts-container"
+        class="px-3 py-2 bg-blue-500 hover:bg-blue-700 text-white rounded cursor-pointer transition-colors">
+        {{ page_num }}
+      </button>
+    {% endif %}
+  {% endfor %}
+</div>
