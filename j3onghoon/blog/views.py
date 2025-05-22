@@ -10,7 +10,7 @@ class HomeView(TemplateView):
 
 class PostBaseListView(ListView):
     model = Post
-    paginate_by = 10
+    paginate_by = 8
 
     # todo 캐시 추가
     def get(self, request, *args, **kwargs):
@@ -22,8 +22,11 @@ class PostBaseListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["page_range"] = self.get_paginator(self.get_queryset(), 10).get_elided_page_range()
-        print("hello", context)
+        context["elided_page_range"] = context["paginator"].get_elided_page_range(
+            number=context["page_obj"].number,
+            on_each_side=2,
+            on_ends=1,
+        )
         return context
 
     def get_template_names(self):
@@ -41,6 +44,7 @@ class PostListView(PostBaseListView):
 
 class PostDetailView(DetailView):
     model = Post
+    template_name = "post_detail.html"
 
     def get_queryset(self):
         return self.model.objects.prefetch_related("comments", "comments__author")
