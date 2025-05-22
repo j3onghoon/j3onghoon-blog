@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="text-4xl">{{ post.title }}</div>
+  <div class="mt-4">{{ post.content }}</div>
+  <div class="mt-4">
+    <span class="text-2xl">댓글</span>
+    {% for comment in comments %}
+    {% empty %}
+      <p class="text-gray-400">댓글이 없습니다.</p>
+    {% endfor %}
+  </div>
+{% endblock %}
